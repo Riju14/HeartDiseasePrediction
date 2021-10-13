@@ -1,0 +1,1252 @@
+---
+title: "Final Project"
+author: "Dwaipayan Chatterjee"
+date: "9/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r Load Packages}
+# Uncomment below lines to install packages
+# install.packages("ggplot2"") # Install ggplot2
+# install.packages("reshape2") # Install reshape2
+# install.packages("glmnet") # Install glmnet
+# install.packages("plotmo")
+library(ggplot2) # load ggplot
+library(reshape2) # load reshape 2
+library(glmnet) # Load glmnet
+library(naniar)
+library(plotmo)
+library(ggridges)
+library(glmnet)
+library(plotmo)
+# for plot_glmnet
+```
+
+```{r Load Data 2}
+med_data<- read.csv("C:/Users/dwaip/Desktop/Mendoza Yr 2/Sem 3/ML/Final Project/heart_statlog_cleveland_hungary_final.csv")
+```
+
+
+```{r}
+dim(med_data)
+```
+
+
+```{r}
+summary(med_data)
+
+```
+
+
+```{r}
+vis_miss(med_data)
+```
+
+```{r}
+
+g_1 <- ggplot(med_data, aes(x = resting.bp.s, fill = factor(target))) + 
+  geom_density(alpha = 0.5) + 
+    theme_set(theme_bw(base_size = 22) ) + 
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(), 
+        panel.background = element_blank()) +  
+  labs(x = "Resting BP", title = "BP Vs Heart Disease",
+       fill = "Heart Disease") + # Set labels
+  scale_fill_manual(values = c("1" = "red", "0" = "blue"), 
+                    labels = c("1" = "Heart Disease", "0" = "No Heart Disease")) 
+g_1 
+
+g_2 <- ggplot(med_data, aes(x = cholesterol, fill = factor(target))) + 
+  geom_density(alpha = 0.5) + 
+    theme_set(theme_bw(base_size = 22) ) + 
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(), 
+        panel.background = element_blank()) +  
+  labs(x = "Cholesterol", title = "Cholesterol Vs Heart Disease",
+       fill = "Heart Disease") + # Set labels
+  scale_fill_manual(values = c("1" = "red", "0" = "blue"), 
+                    labels = c("1" = "Heart Disease", "0" = "No Heart Disease")) 
+g_2 
+
+g_3 <- ggplot(med_data, aes(x = age, fill = factor(target))) + 
+  geom_density(alpha = 0.5) + 
+    theme_set(theme_bw(base_size = 22) ) + 
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(), 
+        panel.background = element_blank()) +  
+  labs(x = "Age", title = "Age Vs Heart Disease",
+       fill = "Heart Disease") + # Set labels
+  scale_fill_manual(values = c("1" = "red", "0" = "blue"), 
+                    labels = c("1" = "Heart Disease", "0" = "No Heart Disease")) 
+g_3 
+
+
+g_4 <- ggplot(med_data, aes(x = factor(chest.pain.type), fill = factor(target))) + # Set x as mean texture and fill as diagnosis
+  geom_bar(alpha = 0.5,position="dodge") + # Select density plot and set transperancy (alpha)
+    theme_set(theme_bw(base_size = 22) ) + # Set theme and text size
+  theme(panel.grid.major = element_blank(), # Remove grid
+        panel.grid.minor = element_blank(), # Remove grid
+        panel.border = element_blank(), # Remove grid
+        panel.background = element_blank()) + # Remove grid 
+  labs(x = "Type of Chest Pain", title = "Type of Chest Pain vs Heart Disease",
+       fill = "Heart Disease")  # Set labels
+
+g_4
+
+g_5 <- ggplot(med_data, aes(x = max.heart.rate, fill = factor(target))) + 
+  geom_density(alpha = 0.5) + 
+    theme_set(theme_bw(base_size = 22) ) + 
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(), 
+        panel.background = element_blank()) +  
+  labs(x = "Max Heart Rate", title = "Heart rate Vs Heart Disease",
+       fill = "Heart Disease") + # Set labels
+  scale_fill_manual(values = c("1" = "red", "0" = "blue"), 
+                    labels = c("1" = "Heart Disease", "0" = "No Heart Disease")) 
+g_5
+
+g_6 <- ggplot(med_data, aes(x = factor(fasting.blood.sugar), fill = factor(target))) + # Set x as mean texture and fill as diagnosis
+  geom_bar(alpha = 0.5,position="dodge") + # Select density plot and set transperancy (alpha)
+    theme_set(theme_bw(base_size = 22) ) + # Set theme and text size
+  theme(panel.grid.major = element_blank(), # Remove grid
+        panel.grid.minor = element_blank(), # Remove grid
+        panel.border = element_blank(), # Remove grid
+        panel.background = element_blank()) + # Remove grid 
+  labs(x = "Heightened Blood Sugar", title = "Heightened Blood Sugar levels vs Heart Disease",
+       fill = "Heart Disease")  # Set labels
+
+g_6
+
+g_7 <- ggplot(med_data,aes(x=age,y=factor(exercise.angina),fill=factor(target))) + geom_density_ridges() +labs(x = "Age", title = "Age Vs Exercise induced angina",
+       fill = "Heart Disease") + # Set labels
+  scale_fill_manual(values = c("1" = "red", "0" = "blue"), 
+                    labels = c("1" = "Heart Disease", "0" = "No Heart Disease"))
+    
+g_7 
+
+g_8 <- ggplot(med_data, aes(x = age, fill = factor(exercise.angina))) + 
+  geom_density(alpha = 0.5) + 
+    theme_set(theme_bw(base_size = 22) ) + 
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(), 
+        panel.background = element_blank()) +  
+  labs(x = "Age", title = "Age Vs Exercise Induced Angina",
+       fill = "Exercise Induced Angina") + # Set labels
+  scale_fill_manual(values = c("1" = "red", "0" = "blue"), 
+                    labels = c("1" = "Exercise Induced", "0" = "Not Exercise Induced Angina")) 
+g_8
+
+
+g_9 <- ggplot(med_data, aes(x = factor(ST.slope), fill = factor(target))) + # Set x as mean texture and fill as diagnosis
+  geom_bar(alpha = 0.5,position="dodge") + # Select density plot and set transperancy (alpha)
+    theme_set(theme_bw(base_size = 22) ) + # Set theme and text size
+  theme(panel.grid.major = element_blank(), # Remove grid
+        panel.grid.minor = element_blank(), # Remove grid
+        panel.border = element_blank(), # Remove grid
+        panel.background = element_blank()) + # Remove grid 
+  labs(x = "ST Slope", title = "ST Slope vs Heart Disease",
+       fill = "Heart Disease")  # Set labels
+
+g_9
+
+```
+
+
+
+Splitting data into Train and Test
+```{r}
+library(splitstackshape) 
+set.seed(123456)
+split_dat <- stratified(med_data, # Set dataset
+                         group = "target",  
+                         size = 0.2,  # Set size of test set
+                         bothSets = TRUE ) # Return both training and test sets
+ # Extract train data
+ train_dat <- split_dat[[2]]
+ # Extract test data
+ test_dat <- split_dat[[1]]
+
+```
+
+#Logistic Regression
+
+
+```{r}
+
+fit_1 <- glm(target ~ age, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_1)
+```
+
+```{r}
+fit_2 <- glm(target ~ sex, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_2)
+```
+```{r}
+fit_3 <- glm(target ~ chest.pain.type, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_3)
+```
+```{r}
+fit_4 <- glm(target ~ resting.bp.s, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_4)
+```
+```{r}
+fit_5 <- glm(target ~ cholesterol, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_5)
+```
+```{r}
+fit_6 <- glm(target ~ fasting.blood.sugar, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_6)
+
+```
+```{r}
+fit_7 <- glm(target ~ resting.ecg, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_7)
+```
+```{r}
+fit_8 <- glm(target ~ max.heart.rate, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_8)
+```
+```{r}
+
+fit_9 <- glm(target ~ exercise.angina, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data=  train_dat) # Set dataset
+summary(fit_9)
+```
+
+```{r}
+
+fit_10 <- glm(target ~ oldpeak, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_10)
+```
+```{r}
+
+fit_11 <- glm(target ~ ST.slope, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_11)
+```
+We will start with ST.slope since it has Lowest AIC variable and add variables and interactions to it.
+
+```{r}
+
+fit_12 <- glm(target ~ ST.slope*fasting.blood.sugar, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_12)
+
+```
+We see a reduction in AIC. Next adding in exercise angina which had the 2nd highest AIC into the model
+
+```{r}
+fit_13 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_13)
+```
+Next adding in the interaction of chest pain type which has one of the lowest AICs with Cholesterol. Adding this interaction since research suggests cholesterol clogs up our arteries and hence should lead to chest pain. Trying interaction with blood pressure increased the AIC
+```{r}
+
+fit_14 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina+chest.pain.type*cholesterol, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_14)
+```
+Significant reduction in AIC. Trying different combinations from here on
+
+```{r}
+
+fit_15 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina+chest.pain.type*cholesterol+oldpeak, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_15)
+```
+```{r}
+fit_16 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina+chest.pain.type*cholesterol+oldpeak*sex, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_16)
+```
+```{r}
+fit_16 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina*max.heart.rate+chest.pain.type*cholesterol+oldpeak*sex+age, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_16)
+```
+
+
+```{r}
+fit_17 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina*age+chest.pain.type*cholesterol+oldpeak*sex, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_17)
+```
+
+```{r}
+fit_18 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina*age+chest.pain.type*cholesterol+oldpeak*sex+max.heart.rate, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_18)
+```
+
+```{r}
+fit_19 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina*age+chest.pain.type*cholesterol+oldpeak*sex+max.heart.rate+resting.ecg, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_19)
+
+
+
+```
+```{r}
+
+fit_20 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina*age+chest.pain.type*cholesterol+oldpeak*sex+max.heart.rate+resting.bp.s, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_20)
+```
+
+
+```{r}
+
+fit_21 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina*age+chest.pain.type*cholesterol+oldpeak*sex+max.heart.rate+resting.bp.s*resting.ecg, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_21)
+```
+
+```{r}
+
+fit_22 <- glm(target ~ ST.slope*fasting.blood.sugar+exercise.angina*age+chest.pain.type*cholesterol+oldpeak*sex+max.heart.rate, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_22)
+
+```
+```{r}
+fit_23 <- glm(target ~ ST.slope*resting.ecg+exercise.angina*age+chest.pain.type*fasting.blood.sugar+oldpeak*sex+max.heart.rate, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_23)
+
+
+```
+
+Testing a model without interactions
+```{r}
+fit_24 <- glm(target ~ ST.slope+exercise.angina+chest.pain.type+oldpeak+max.heart.rate+age+sex, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_24)
+
+```
+
+
+```{r}
+fit_25 <- glm(target ~ ST.slope*resting.ecg+exercise.angina*age+chest.pain.type*fasting.blood.sugar+oldpeak*sex+max.heart.rate*cholesterol, # Set formula
+             family=binomial(link='logit'), # Set logistic regression
+             data= train_dat) # Set dataset
+summary(fit_25)
+
+
+```
+
+Fit_25 is the best model providing lowest AIC while omitting resting.bp.s. Adding resting.bp.s increases AIC
+
+The model is target ~ ST.slope*resting.ecg+exercise.angina*age+chest.pain.type*fasting.blood.sugar+oldpeak*sex+max.heart.rate*cholesterol
+
+What is surprising is that blood pressure, a supposedly crucial indicator is absent in best model. Blood pressure is considered a chronic conditions requiring daily medication. Also blood pressure increases insurance premiums significantly.
+
+Test Logistic Regression Confusion Matrix
+```{r}
+library(OptimalCutpoints)
+library(rpart)                      # Popular decision tree algorithm
+           # Enhanced tree plots
+library(RColorBrewer)               # Color selection for fancy tree plot
+             # Convert rpart object to BinaryTree
+library(caret)  
+library(reshape2) # Load reshape 2 for melting
+
+library(splitstackshape)
+
+logit_preds <- predict(fit_25, train_dat) 
+# Join predictions and actual
+pred_dat <- cbind.data.frame(logit_preds , train_dat$target)
+names(pred_dat) <- c("predictions", "response")
+oc<- optimal.cutpoints(X = "predictions",
+                       status = "response",
+                       tag.healthy = 0,
+                       data = pred_dat,
+                       methods = "MaxEfficiency")
+
+logit_preds_1 <- predict(fit_25, test_dat) # Create predictions for xgboost model
+
+pred_dat <- cbind.data.frame(logit_preds_1 , test_dat$target)#
+# Convert predictions to classes, using optimal cut-off
+logit_pred_class <- rep(0, length(logit_preds_1))
+logit_pred_class[logit_preds_1 >= oc$MaxEfficiency$Global$optimal.cutoff$cutoff[1]] <- 1
+
+t1 <- table(logit_pred_class, test_dat$target) # Create table
+confusionMatrix(t1, positive = "1") # Produce confusion matrix
+
+
+```
+#Classification Tree
+```{r}
+set.seed(999999)
+tree_1 <- rpart(target ~., # Set tree formula
+data = test_dat) # Set dataset
+par(xpd = NA)
+
+plotcp(tree_1)
+tree_2 <- tree_1 <- rpart(target ~., # Set tree formula
+data = test_dat, # Set data
+control = rpart.control(cp = 0.026)) # Set parameters
+
+
+tree_preds <- predict(tree_2, train_dat) 
+# Join predictions and actual
+pred_dat1 <- cbind.data.frame(tree_preds , train_dat$target)
+names(pred_dat1) <- c("predictions", "response")
+oc1<- optimal.cutpoints(X = "predictions",
+                       status = "response",
+                       tag.healthy = 0,
+                       data = pred_dat1,
+                       methods = "MaxEfficiency")
+
+tree_preds_1 <- predict(tree_2, test_dat) # Create predictions for xgboost model
+
+pred_dat1 <- cbind.data.frame(tree_preds_1 , test_dat$target)#
+# Convert predictions to classes, using optimal cut-off
+tree_pred_class <- rep(0, length(tree_preds_1))
+tree_pred_class[tree_preds_1 >= oc1$MaxEfficiency$Global$optimal.cutoff$cutoff[1]] <- 1
+
+t2 <- table(tree_pred_class, test_dat$target) # Create table
+confusionMatrix(t2, positive = "1") # Produce confusion matrix
+
+```
+
+#Random Forest
+```{r}
+library(randomForest)
+library(rpart) # Load rpart for decision trees
+library(caret)
+set.seed(111111)
+bag_mod1 <- randomForest(factor(target) ~., # Set tree formula
+                data = train_dat, # Set dataset
+                mtry = 11, # Set mtry to number of variables 
+                ntree = 200) # Set number of trees to use
+bag_mod1
+
+bag_preds <- predict(bag_mod1, test_dat)
+
+t3 <- table(bag_preds,test_dat$target) # Create table
+confusionMatrix(t3,  positive = "1") 
+
+#pred_dat1 <- cbind.data.frame(bag_preds , test_dat$target)#
+# Convert predictions to classes, using optimal cut-off
+#bag_pred_class <- rep(0, length(bag_preds))
+#bag_pred_class[bag_preds >= oc1$MaxEfficiency$Global$optimal.cutoff$cutoff[1]] <- 1
+
+#t3 <- table(bag_pred_class, test_dat$target) # Create table
+#confusionMatrix(t3, positive = "1") # Produce confusion matrix
+
+```
+```{r}
+oob_error <- bag_mod1$err.rate[,1] # Extract oob error
+plot_dat <- cbind.data.frame(rep(1:length(oob_error)), oob_error) # Create plot data
+names(plot_dat) <- c("trees", "oob_error") # Name plot data
+
+
+# Plot oob error
+g_1 <- ggplot(plot_dat, aes(x = trees, y = oob_error)) + # Set x as trees and y as error
+  geom_point(alpha = 0.5, color = "blue") + # Select geom point
+  geom_smooth() + # Add smoothing line
+  theme_bw() + # Set theme
+  theme(panel.grid.major = element_blank(), # Remove grid
+        panel.grid.minor = element_blank(), # Remove grid
+        panel.border = element_blank(), # Remove grid
+        panel.background = element_blank()) + # Remove grid 
+  labs(x = "Number of Trees", title = "Error Rate v Number of Trees",
+       y = "Error Rate")  # Set labels
+g_1 # Print plot
+```
+
+
+```{r}
+set.seed(111111)
+bag_mod2 <- randomForest(factor(target) ~., # Set tree formula
+                data = train_dat, # Set dataset
+                mtry = 11, # Set mtry to number of variables 
+                ntree = 1000) # Set number of trees to use
+bag_mod2
+
+bag_preds1 <- predict(bag_mod2, test_dat)
+
+t4 <- table(bag_preds1,test_dat$target) # Create table
+confusionMatrix(t4,  positive = "1") 
+
+```
+
+
+
+```{r}
+oob_error <- bag_mod2$err.rate[,1] # Extract oob error
+plot_dat <- cbind.data.frame(rep(1:length(oob_error)), oob_error) # Create plot data
+names(plot_dat) <- c("trees", "oob_error") # Name plot data
+
+
+# Plot oob error
+g_2 <- ggplot(plot_dat, aes(x = trees, y = oob_error)) + # Set x as trees and y as error
+  geom_point(alpha = 0.5, color = "blue") + # Select geom point
+  geom_smooth() + # Add smoothing line
+  theme_bw() + # Set theme
+  theme(panel.grid.major = element_blank(), # Remove grid
+        panel.grid.minor = element_blank(), # Remove grid
+        panel.border = element_blank(), # Remove grid
+        panel.background = element_blank()) + # Remove grid 
+  labs(x = "Number of Trees", title = "Error Rate v Number of Trees",
+       y = "Error Rate")  # Set labels
+g_2 
+
+```
+
+`
+Node Size Tuning
+
+```{r}
+set.seed(111111)
+trees <- c(10, 25, 50, 100, 200, 500, 1000) # Create vector of possible tree sizes
+nodesize <- c(1, 10, 25, 50, 100, 200, 500, 1000) # Create vector of possible node sizes
+
+params <- expand.grid(trees, nodesize) # Expand grid to get data frame of parameter combinations
+names(params) <- c("trees", "nodesize") # Name parameter data frame
+res_vec <- rep(NA, nrow(params)) # Create vector to store accuracy results
+
+for(i in 1:nrow(params)){ # For each set of parameters
+  set.seed(987654) # Set seed for reproducability
+  mod <- randomForest(factor(target) ~. , # Set formula
+                      data=train_dat,# Set data
+                      mtry = 11, # Set number of variables
+                      importance = FALSE,  # 
+                      ntree = params$trees[i], # Set number of trees
+                      nodesize = params$nodesize[i]) # Set node size
+  res_vec[i] <- 1 - mod$err.rate[nrow(mod$err.rate),1] # Calculate out of bag accuracy
+}
+
+```
+
+```{r}
+res_db <- cbind.data.frame(params, res_vec) # Join parameters and accuracy results
+names(res_db)[3] <- "oob_error" # Name accuracy results column
+
+res_db$trees <- as.factor(res_db$trees) # Convert tree number to factor for plotting
+res_db$nodesize <- as.factor(res_db$nodesize) # Convert node size to factor for plotting
+g_2 <- ggplot(res_db, aes(y = trees, x = nodesize, fill = oob_error)) + # set aesthetics
+  geom_tile() + # Use geom_tile for heatmap
+  theme_bw() + # Set theme
+  scale_fill_gradient2(low = "blue", # Choose low color
+    mid = "white", # Choose mid color
+    high = "red", # Choose high color
+    midpoint =mean(res_db$oob_error), # Choose mid point
+    space = "Lab", 
+    na.value ="grey", # Choose NA value
+    guide = "colourbar", # Set color bar
+    aesthetics = "fill") + # Select aesthetics to apply
+  labs(x = "Node Size", y = "Number of Trees", fill = "OOB Accuracy") # Set labels
+g_2  
+
+```
+
+Low node size and high number of trees(500-1000) as well as 50 perform better. Let us try with optimal parameters of node size=1 and tree size 350 as well as node size=1, tree size 50
+
+
+```{r}
+set.seed(111111)
+bag_mod_3 <- randomForest(factor(target) ~., # Set tree formula
+                data = train_dat, # Set dataset
+                mtry = 11, # Set number of variables 
+                ntree = 350, # Set number of trees
+                nodesize = 1,importance = TRUE, 
+                proximity = TRUE) # Set node size
+
+bag_preds_3 <- predict(bag_mod_3, test_dat) # Create predictions for test data
+
+
+t5 <- table(bag_preds_3,  test_dat$target) # Create table
+confusionMatrix(t5,  positive = "1")
+
+```
+
+```{r}
+set.seed(111111)
+bag_mod_4 <- randomForest(factor(target) ~., # Set tree formula
+                data = train_dat, # Set dataset
+                mtry = 11, # Set number of variables 
+                ntree = 50, # Set number of trees
+                nodesize = 1,importance = TRUE, 
+                proximity = TRUE) # Set node size
+
+bag_preds_4 <- predict(bag_mod_3, test_dat) # Create predictions for test data
+
+
+t6 <- table(bag_preds_4,  test_dat$target) # Create table
+confusionMatrix(t6,  positive = "1")
+
+```
+
+Tree size 50 gives almost same accuracy
+
+```{r}
+varImpPlot(bag_mod_3, type =2, n.var = 10)
+```
+
+ST.Slope is by far the most important factor. Max heart rate and chest pain type are also important
+
+#XGBoost
+```{r}
+ # Load XGBoost
+#install.packages("caret")
+ 
+
+#install.packages("caret")
+#install.packages("OptimalCutpoints")
+#install.packages("ggplot2")
+#library(devtools) 
+
+#install_github("AppliedDataSciencePartners/xgboostExplainer")
+
+#install.packages("devtools")
+#library(devtools)
+#install_github("AppliedDataSciencePartners/xgboostExplainer")
+
+library(xgboostExplainer) # Load XGboost Explainer
+library(pROC)
+library(xgboost)
+library(SHAPforxgboost)
+#library(caret)
+names(train_dat)
+
+# Create training matrix
+dtrain <- xgb.DMatrix(data = as.matrix(train_dat[, 1:11]), label = as.numeric(train_dat$target))
+# Create test matrix
+dtest <- xgb.DMatrix(data = as.matrix(test_dat[, 1:11]), label = as.numeric(test_dat$target) )
+
+```
+Comparison
+```{r}
+set.seed(111111)
+bst_1 <- xgboost(data = dtrain, # Set training data
+               
+               nrounds = 100, # Set number of rounds
+               
+               verbose = 1, # 1 - Prints out fit
+                print_every_n = 20, 
+               
+               objective = "binary:logistic", # Set objective
+               eval_metric = "auc",
+               eval_metric = "error") 
+
+boost_preds <- predict(bst_1, dtrain) # Create predictions for xgboost model
+# Join predictions and actual
+pred_dat <- cbind.data.frame(boost_preds , train_dat$target)
+names(pred_dat) <- c("predictions", "response")
+oc<- optimal.cutpoints(X = "predictions",
+                       status = "response",
+                       tag.healthy = 0,
+                       data = pred_dat,
+                       methods = "MaxEfficiency")
+
+boost_preds_1 <- predict(bst_1, dtest) # Create predictions for xgboost model
+
+pred_dat <- cbind.data.frame(boost_preds_1 , test_dat$target)#
+# Convert predictions to classes, using optimal cut-off
+boost_pred_class <- rep(0, length(boost_preds_1))
+boost_pred_class[boost_preds_1 >= oc$MaxEfficiency$Global$optimal.cutoff$cutoff[1]] <- 1
+
+
+t7 <- table(boost_pred_class, test_dat$target) # Create table
+confusionMatrix(t7, positive = "1") # Produce confusion matrix
+
+
+
+```
+XGBoost Tuning
+```{r}
+set.seed(111111)
+bst <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+               eta = 0.1, # Set learning rate
+              
+               nrounds = 1000, # Set number of rounds
+               early_stopping_rounds = 50, # Set number of rounds to stop at if there is no improvement
+               
+               verbose = 1, # 1 - Prints out fit
+               nthread = 1, # Set number of parallel threads
+               print_every_n = 20, # Prints out result every 20th iteration
+              
+               objective = "binary:logistic", # Set objective
+               eval_metric = "auc",
+               eval_metric = "error")
+
+```
+101 optimal iterations for our model. Setting the number of iterations to 500 and including an early stop parameter of 90 for our next round of tuning. Next we will tune max.depth and min_child_weight.
+```{r}
+max_depth_vals <- c(3, 5, 7, 10, 15) # Create vector of max depth values
+min_child_weight <- c(1,3,5,7, 10, 15) # Create vector of min child values
+
+# Expand grid of parameter values
+cv_params <- expand.grid(max_depth_vals, min_child_weight)
+names(cv_params) <- c("max_depth", "min_child_weight")
+# Create results vector
+auc_vec <- error_vec <- rep(NA, nrow(cv_params)) 
+# Loop through results
+for(i in 1:nrow(cv_params)){
+  set.seed(111111)
+  bst_tune <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.1, # Set learning rate
+              max.depth = cv_params$max_depth[i], # Set max depth
+              min_child_weight = cv_params$min_child_weight[i], # Set minimum number of samples in node to split
+             
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 90, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+               
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc", # Set evaluation metric to use
+              eval_metric = "error") # Set evaluation metric to use
+  auc_vec[i] <- bst_tune$evaluation_log$test_auc_mean[bst_tune$best_ntreelimit]
+  error_vec[i] <- bst_tune$evaluation_log$test_error_mean[bst_tune$best_ntreelimit]
+  
+}
+
+```
+
+```{r}
+res_db <- cbind.data.frame(cv_params, auc_vec, error_vec)
+names(res_db)[3:4] <- c("auc", "error") 
+res_db$max_depth <- as.factor(res_db$max_depth) # Convert tree number to factor for plotting
+res_db$min_child_weight <- as.factor(res_db$min_child_weight) # Convert node size to factor for plotting
+# Print AUC heatmap
+g_3 <- ggplot(res_db, aes(y = max_depth, x = min_child_weight, fill = auc)) + # set aesthetics
+  geom_tile() + # Use geom_tile for heatmap
+  theme_bw() + # Set theme
+  scale_fill_gradient2(low = "blue", # Choose low color
+    mid = "white", # Choose mid color
+    high = "red", # Choose high color
+    midpoint =mean(res_db$auc), # Choose mid point
+    space = "Lab", 
+    na.value ="grey", # Choose NA value
+    guide = "colourbar", # Set color bar
+    aesthetics = "fill") + # Select aesthetics to apply
+  labs(x = "Minimum Child Weight", y = "Max Depth", fill = "AUC") # Set labels
+g_3 
+
+```
+
+```{r}
+g_4 <- ggplot(res_db, aes(y = max_depth, x = min_child_weight, fill = error)) + # set aesthetics
+  geom_tile() + # Use geom_tile for heatmap
+  theme_bw() + # Set theme
+  scale_fill_gradient2(low = "blue", # Choose low color
+    mid = "white", # Choose mid color
+    high = "red", # Choose high color
+    midpoint =mean(res_db$error), # Choose mid point
+    space = "Lab", 
+    na.value ="grey", # Choose NA value
+    guide = "colourbar", # Set color bar
+    aesthetics = "fill") + # Select aesthetics to apply
+  labs(x = "Minimum Child Weight", y = "Max Depth", fill = "Error") # Set labels
+g_4 
+
+```
+
+
+```{r}
+res_db
+
+```
+
+Based on graph and results, the optimal values of
+max depth:5
+minimum child weight:1
+
+Maximizes auc and minimizes error
+
+Tuning gamma
+
+```{r}
+gamma_vals <- c(0, 0.05, 0.1, 0.15, 0.2) # Create vector of gamma values
+
+# Be Careful - This can take a very long time to run
+set.seed(111111)
+auc_vec <- error_vec <- rep(NA, length(gamma_vals))
+for(i in 1:length(gamma_vals)){
+  bst_tune <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.1, # Set learning rate
+              max.depth = 5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = gamma_vals[i], # Set minimum loss reduction for split
+
+              
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 90, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+               
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc", # Set evaluation metric to use
+              eval_metric = "error") # Set evaluation metric to use
+  auc_vec[i] <- bst_tune$evaluation_log$test_auc_mean[bst_tune$best_ntreelimit]
+  error_vec[i] <- bst_tune$evaluation_log$test_error_mean[bst_tune$best_ntreelimit]
+  
+}
+
+```
+
+```{r}
+cbind.data.frame(gamma_vals, auc_vec, error_vec)
+
+```
+Optimal value of gamma is .15 giving highest AUC and lowest error rate.
+
+```{r}
+set.seed(111111)
+bst <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.1, # Set learning rate
+              max.depth = 5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = .15, # Set minimum loss reduction for split
+             
+               
+              nrounds = 1000, # Set number of rounds
+              early_stopping_rounds = 50, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+               
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc",
+              eval_metric = "error") 
+
+```
+Optimal number of trees with current set of parameters is ~100
+
+Tuning the subsample and colsample_by_tree parameters
+```{r}
+# Be Careful - This can take a very long time to run
+subsample <- c(0.6, 0.7, 0.8, 0.9, 1) # Create vector of subsample values
+colsample_by_tree <- c(0.6, 0.7, 0.8, 0.9, 1) # Create vector of col sample values
+
+# Expand grid of tuning parameters
+cv_params <- expand.grid(subsample, colsample_by_tree)
+names(cv_params) <- c("subsample", "colsample_by_tree")
+# Create vectors to store results
+auc_vec <- error_vec <- rep(NA, nrow(cv_params)) 
+# Loop through parameter values
+for(i in 1:nrow(cv_params)){
+  set.seed(111111)
+  bst_tune <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.1, # Set learning rate
+              max.depth = 5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = .15, # Set minimum loss reduction for split
+              subsample = cv_params$subsample[i], # Set proportion of training data to use in tree
+              colsample_bytree = cv_params$colsample_by_tree[i], # Set number of variables to use in each tree
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 100, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+               
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc", # Set evaluation metric to use
+              eval_metric = "error") # Set evaluation metric to use
+  auc_vec[i] <- bst_tune$evaluation_log$test_auc_mean[bst_tune$best_ntreelimit]
+  error_vec[i] <- bst_tune$evaluation_log$test_error_mean[bst_tune$best_ntreelimit]
+  
+}
+
+```
+
+
+
+```{r}
+res_db <- cbind.data.frame(cv_params, auc_vec, error_vec)
+names(res_db)[3:4] <- c("auc", "error") 
+res_db$subsample <- as.factor(res_db$subsample) # Convert tree number to factor for plotting
+res_db$colsample_by_tree <- as.factor(res_db$colsample_by_tree) # Convert node size to factor for plotting
+g_5 <- ggplot(res_db, aes(y = colsample_by_tree, x = subsample, fill = auc)) + # set aesthetics
+  geom_tile() + # Use geom_tile for heatmap
+  theme_bw() + # Set theme
+  scale_fill_gradient2(low = "blue", # Choose low color
+    mid = "white", # Choose mid color
+    high = "red", # Choose high color
+    midpoint =mean(res_db$auc), # Choose mid point
+    space = "Lab", 
+    na.value ="grey", # Choose NA value
+    guide = "colourbar", # Set color bar
+    aesthetics = "fill") + # Select aesthetics to apply
+  labs(x = "Subsample", y = "Column Sample by Tree", fill = "AUC") # Set labels
+g_5 
+
+```
+
+
+```{r}
+g_6 <- ggplot(res_db, aes(y = colsample_by_tree, x = subsample, fill = error)) + # set aesthetics
+  geom_tile() + # Use geom_tile for heatmap
+  theme_bw() + # Set theme
+  scale_fill_gradient2(low = "blue", # Choose low color
+    mid = "white", # Choose mid color
+    high = "red", # Choose high color
+    midpoint =mean(res_db$error), # Choose mid point
+    space = "Lab", 
+    na.value ="grey", # Choose NA value
+    guide = "colourbar", # Set color bar
+    aesthetics = "fill") + # Select aesthetics to apply
+  labs(x = "Subsample", y = "Column Sample by Tree", fill = "Error") # Set labels
+g_6 
+
+```
+
+
+```{r}
+res_db
+
+```
+Subsample of .8 and colsample_by_tree of .9 maximizes auc and minimizes error
+
+Finally we will tune eta
+
+```{r}
+set.seed(111111)
+bst_mod_1 <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.3, # Set learning rate
+              max.depth = 5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = .15, 
+              subsample = 0.8, # Set proportion of training data to use in tree
+              colsample_bytree =  0.9, # Set number of variables to use in each tree
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 100, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+              
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc",
+              eval_metric = "error")
+
+```
+
+```{r}
+set.seed(111111)
+bst_mod_2 <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.1, # Set learning rate
+              max.depth = 5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = .15, 
+              subsample = 0.8, # Set proportion of training data to use in tree
+              colsample_bytree =  0.9, # Set number of variables to use in each tree
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 100, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+              
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc",
+              eval_metric = "error")
+
+```
+
+```{r}
+set.seed(111111)
+bst_mod_3 <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.05, # Set learning rate
+              max.depth = 5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = .15, 
+              subsample = 0.8, # Set proportion of training data to use in tree
+              colsample_bytree =  0.9, # Set number of variables to use in each tree
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 100, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+              
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc",
+              eval_metric = "error")
+
+```
+
+```{r}
+set.seed(111111)
+bst_mod_4 <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.01, # Set learning rate
+              max.depth = 5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = .15, 
+              subsample = 0.8, # Set proportion of training data to use in tree
+              colsample_bytree =  0.9, # Set number of variables to use in each tree
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 100, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+              
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc",
+              eval_metric = "error")
+
+```
+
+
+```{r}
+set.seed(111111)
+bst_mod_5 <- xgb.cv(data = dtrain, # Set training data
+              
+              nfold = 5, # Use 5 fold cross-validation
+               
+              eta = 0.005, # Set learning rate
+              max.depth = 5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = .15, 
+              subsample = 0.8, # Set proportion of training data to use in tree
+              colsample_bytree =  0.9, # Set number of variables to use in each tree
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 100, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+              
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc",
+              eval_metric = "error")
+
+```
+
+
+```{r}
+# Extract results for model with eta = 0.3
+pd1 <- cbind.data.frame(bst_mod_1$evaluation_log[,c("iter", "test_error_mean")], rep(0.3, nrow(bst_mod_1$evaluation_log)))
+names(pd1)[3] <- "eta"
+# Extract results for model with eta = 0.1
+pd2 <- cbind.data.frame(bst_mod_2$evaluation_log[,c("iter", "test_error_mean")], rep(0.1, nrow(bst_mod_2$evaluation_log)))
+names(pd2)[3] <- "eta"
+# Extract results for model with eta = 0.05
+pd3 <- cbind.data.frame(bst_mod_3$evaluation_log[,c("iter", "test_error_mean")], rep(0.05, nrow(bst_mod_3$evaluation_log)))
+names(pd3)[3] <- "eta"
+# Extract results for model with eta = 0.01
+pd4 <- cbind.data.frame(bst_mod_4$evaluation_log[,c("iter", "test_error_mean")], rep(0.01, nrow(bst_mod_4$evaluation_log)))
+names(pd4)[3] <- "eta"
+# Extract results for model with eta = 0.005
+pd5 <- cbind.data.frame(bst_mod_5$evaluation_log[,c("iter", "test_error_mean")], rep(0.005, nrow(bst_mod_5$evaluation_log)))
+names(pd5)[3] <- "eta"
+# Join datasets
+plot_data <- rbind.data.frame(pd1, pd2, pd3, pd4, pd5)
+# Converty ETA to factor
+plot_data$eta <- as.factor(plot_data$eta)
+# Plot points
+g_7 <- ggplot(plot_data, aes(x = iter, y = test_error_mean, color = eta))+
+  geom_point(alpha = 0.5) +
+  theme_bw() + # Set theme
+  theme(panel.grid.major = element_blank(), # Remove grid
+        panel.grid.minor = element_blank(), # Remove grid
+        panel.border = element_blank(), # Remove grid
+        panel.background = element_blank()) + # Remove grid 
+  labs(x = "Number of Trees", title = "Error Rate v Number of Trees",
+       y = "Error Rate", color = "Learning \n Rate")  # Set labels
+g_7
+
+```
+
+```{r}
+g_8 <- ggplot(plot_data, aes(x = iter, y = test_error_mean, color = eta))+
+  geom_smooth(alpha = 0.5) +
+  theme_bw() + # Set theme
+  theme(panel.grid.major = element_blank(), # Remove grid
+        panel.grid.minor = element_blank(), # Remove grid
+        panel.border = element_blank(), # Remove grid
+        panel.background = element_blank()) + # Remove grid 
+  labs(x = "Number of Trees", title = "Error Rate v Number of Trees",
+       y = "Error Rate", color = "Learning \n Rate")  # Set labels
+g_8
+
+```
+
+Eta value of .05 gives lowest error rate.
+
+Final Model using tuned parameters
+
+
+```{r}
+set.seed(111111)
+bst_final <- xgboost(data = dtrain, # Set training data
+              
+        
+               
+              eta = 0.05, # Set learning rate
+              max.depth =  5, # Set max depth
+              min_child_weight = 1, # Set minimum number of samples in node to split
+              gamma = .15, # Set minimum loss reduction for split
+              subsample =  0.8, # Set proportion of training data to use in tree
+              colsample_bytree = 0.9, # Set number of variables to use in each tree
+               
+              nrounds = 500, # Set number of rounds
+              early_stopping_rounds = 100, # Set number of rounds to stop at if there is no improvement
+               
+              verbose = 1, # 1 - Prints out fit
+              nthread = 1, # Set number of parallel threads
+              print_every_n = 20, # Prints out result every 20th iteration
+              
+              objective = "binary:logistic", # Set objective
+              eval_metric = "auc",
+              eval_metric = "error") # Set evaluation metric to use
+
+```
+Final model performance on test
+```{r}
+
+boost_preds_final <- predict(bst_final, dtrain) # Create predictions for xgboost model
+# Join predictions and actual
+pred_dat <- cbind.data.frame(boost_preds_final , train_dat$target)
+names(pred_dat) <- c("predictions", "response")
+oc<- optimal.cutpoints(X = "predictions",
+                       status = "response",
+                       tag.healthy = 0,
+                       data = pred_dat,
+                       methods = "MaxEfficiency")
+
+boost_preds_1 <- predict(bst_final, dtest) # Create predictions for xgboost model
+
+pred_dat <- cbind.data.frame(boost_preds_1 , test_dat$target)#
+# Convert predictions to classes, using optimal cut-off
+boost_pred_class <- rep(0, length(boost_preds_1))
+boost_pred_class[boost_preds_1 >= oc$MaxEfficiency$Global$optimal.cutoff$cutoff[1]] <- 1
+
+
+t_xgb <- table(boost_pred_class, test_dat$target) # Create table
+confusionMatrix(t_xgb, positive = "1") # Produce confusion matrix
+
+
+```
+Check for imbalanced dataset
+
+```{r}
+summary(as.factor(train_dat$target))
+
+```
+This isn't an imbalanced dataset
+```{r}
+imp_mat <- xgb.importance(model = bst_final)
+# Plot importance (top 10 variables)
+xgb.plot.importance(imp_mat, top_n = 10)
+
+```
+
+ST.Slope still most important factor. Interestingly, cholesterol is 2nd most important
+
+Method Comparison
+```{r}
+roc_xgb = roc(test_dat$target, boost_preds_1)
+roc_logit = roc(test_dat$target, logit_preds_1)
+roc_tree = roc(test_dat$target, tree_preds_1)
+
+
+bagg.probs=predict(bag_mod_3,
+                 newdata=test_dat,
+                 type="prob")
+
+roc_bag = roc(test_dat$target, bagg.probs[,"1"])
+
+
+
+
+plot.roc(roc_xgb, print.auc = TRUE, col = "red", print.auc.col = "red")
+
+plot.roc(roc_bag , print.auc = TRUE, print.auc.x = 0, print.auc.y = 0.6, col ="blue", print.auc.col = "blue", add = TRUE)
+
+plot.roc(roc_logit , print.auc = TRUE, print.auc.x = 0, print.auc.y = 0.8, col ="green", print.auc.col = "green", add = TRUE)
+
+plot.roc(roc_tree , print.auc = TRUE, print.auc.x = 0, print.auc.y = 1, col ="orange", print.auc.col = "orange", add = TRUE)
+
+
+```
+
